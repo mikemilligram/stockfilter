@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Filter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Stock Filter</h1>
+        
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <h2 class="text-lg font-semibold mb-3 text-gray-700">Search Criteria</h2>
+                <form id="searchForm" class="space-y-4">
+                    <!-- Revenue Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Revenue (Required)</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <input type="text" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="revenueMin" 
+                                    placeholder="Minimum Revenue"
+                                    value="500 000 000"
+                                    required>
+                            </div>
+                            <div>
+                                <input type="text" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="revenueMax" 
+                                    placeholder="Maximum (Optional)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Growth -->
+                    <div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Revenue Growth %</label>
+                                <input type="number" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="revenueGrowthMin" 
+                                    placeholder="Minimum Growth"
+                                    value="20">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
+                                <input type="number" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="revenueGrowthYears" 
+                                    placeholder="Number of Years"
+                                    min="1"
+                                    step="1"
+                                    value="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Earnings Growth -->
+                    <div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Earnings Growth %</label>
+                                <input type="number" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="earningsGrowthMin" 
+                                    placeholder="Minimum Growth"
+                                    value="15">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
+                                <input type="number" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="earningsGrowthYears" 
+                                    placeholder="Number of Years"
+                                    min="1"
+                                    step="1"
+                                    value="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Return on Equity -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Return on Equity</label>
+                        <div>                                
+                            <input type="number" 
+                                class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                id="roeMin" 
+                                placeholder="Minimum ROE %"
+                                value="35">
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                        id="searchButton"
+                        class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="inline-flex items-center">
+                            <span id="searchButtonText">Search</span>
+                            <svg id="loadingSpinner" class="hidden w-5 h-5 ml-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="results-container hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-baseline gap-3">
+                    <h3 class="text-xl font-semibold text-gray-700">Results</h3>
+                    <span id="resultCount" class="text-sm text-gray-500"></span>
+                </div>
+                <button class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors" 
+                    id="exportBtn">
+                    Export to CSV
+                </button>
+            </div>
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr id="tableHeader">
+                            <!-- Headers will be dynamically populated -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Results will be dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.remove('hidden');
+            document.getElementById('searchButtonText').textContent = 'Searching...';
+            document.getElementById('searchButton').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            document.getElementById('searchButtonText').textContent = 'Search';
+            document.getElementById('searchButton').disabled = false;
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const revenueMin = document.getElementById('revenueMin').value;
+            if (!revenueMin) {
+                alert('Minimum revenue is required');
+                return;
+            }
+
+            showLoading();
+
+            const criteria = {
+                revenue: {
+                    min: parseFloat(revenueMin),
+                    max: document.getElementById('revenueMax').value ? parseFloat(document.getElementById('revenueMax').value) : null
+                },
+                revenueGrowth: {
+                    min: document.getElementById('revenueGrowthMin').value ? parseFloat(document.getElementById('revenueGrowthMin').value) : null,
+                    years: document.getElementById('revenueGrowthYears').value ? parseInt(document.getElementById('revenueGrowthYears').value) : null
+                },
+                earningsGrowth: {
+                    min: document.getElementById('earningsGrowthMin').value ? parseFloat(document.getElementById('earningsGrowthMin').value) : null,
+                    years: document.getElementById('earningsGrowthYears').value ? parseInt(document.getElementById('earningsGrowthYears').value) : null
+                },
+                roe: {
+                    min: document.getElementById('roeMin').value ? parseFloat(document.getElementById('roeMin').value) : null
+                }
+            };
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(criteria)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    displayResults(result.data, result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error searching: ' + error);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function formatCellValue(field, value, row) {
+            if (value === null || value === undefined) return '-';
+            
+            switch (field) {
+                case 'revenue':
+                    const symbol = (row?.currency_symbol || '$').trim();
+                    const formattedNumber = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                    return `${symbol} ${formattedNumber}`;
+                case 'return_on_equity':
+                    return (value * 100).toFixed(2) + '%';
+                case 'currency_symbol':
+                    return null; // Don't show the currency symbol in its own column
+                default:
+                    return value;
+            }
+        }
+
+        function displayResults(data, response) {
+            if (!data || data.length === 0) {
+                alert('No results found');
+                return;
+            }
+
+            // Show results container and update count
+            document.querySelector('.results-container').style.display = 'block';
+            document.getElementById('resultCount').textContent = 
+                `${data.length} ${data.length === 1 ? 'symbol' : 'symbols'} found`;
+
+            // Get the ordered headers from the response or fall back to Object.keys
+            const headers = response?.fieldOrder || Object.keys(data[0]);
+            const headerRow = document.getElementById('tableHeader');
+            headerRow.innerHTML = headers.map(h => `
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ${h.replace(/_/g, ' ')}
+                </th>
+            `).join('');
+
+            // Populate table body
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = data.map(row => {
+                return `<tr class="hover:bg-gray-50">
+                    ${headers.map(h => {
+                        const formattedValue = formatCellValue(h, row[h], row);
+                        return formattedValue === null ? '' : `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                ${formattedValue}
+                            </td>
+                        `;
+                    }).join('')}
+                </tr>`;
+            }).join('');
+
+            // Store data for export
+            window.currentResults = data;
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            if (!window.currentResults || window.currentResults.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            try {
+                const response = await fetch('/export', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: window.currentResults })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // Create and download CSV file
+                    const blob = new Blob([result.csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.setAttribute('hidden', '');
+                    a.setAttribute('href', url);
+                    a.setAttribute('download', 'export.csv');
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error exporting: ' + error);
+            }
+        });
+
+        // Format number with thousand separators
+        function formatNumber(value) {
+            if (!value) return '';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+
+        // Parse formatted number back to raw number
+        function parseFormattedNumber(value) {
+            if (!value) return null;
+            return parseFloat(value.replace(/\s/g, ''));
+        }
+
+        // Handle revenue input formatting
+        function setupRevenueInput(inputElement) {
+            inputElement.addEventListener('input', (e) => {
+                const cursorPosition = e.target.selectionStart;
+                const oldLength = e.target.value.length;
+                
+                // Remove any non-digit characters
+                let value = e.target.value.replace(/[^\d]/g, '');
+                
+                // Format the number
+                const formattedValue = formatNumber(value);
+                e.target.value = formattedValue;
+                
+                // Adjust cursor position after formatting
+                const newLength = formattedValue.length;
+                const newPosition = cursorPosition + (newLength - oldLength);
+                e.target.setSelectionRange(newPosition, newPosition);
+            });
+        }
+
+        // Set up formatting for revenue inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            setupRevenueInput(document.getElementById('revenueMin'));
+            setupRevenueInput(document.getElementById('revenueMax'));
+        });
+
+        // Update form submission to handle formatted numbers
+        const originalSubmit = document.getElementById('searchForm').onsubmit;
+        document.getElementById('searchForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const revenueMin = parseFormattedNumber(document.getElementById('revenueMin').value);
+            if (!revenueMin) {
+                alert('Minimum revenue is required');
+                return;
+            }
+
+            const criteria = {
+                revenue: {
+                    min: revenueMin,
+                    max: parseFormattedNumber(document.getElementById('revenueMax').value)
+                },
+                revenueGrowth: {
+                    min: document.getElementById('revenueGrowthMin').value ? parseFloat(document.getElementById('revenueGrowthMin').value) : null,
+                    years: document.getElementById('revenueGrowthYears').value ? parseInt(document.getElementById('revenueGrowthYears').value) : null
+                },
+                earningsGrowth: {
+                    min: document.getElementById('earningsGrowthMin').value ? parseFloat(document.getElementById('earningsGrowthMin').value) : null,
+                    years: document.getElementById('earningsGrowthYears').value ? parseInt(document.getElementById('earningsGrowthYears').value) : null
+                },
+                roe: {
+                    min: document.getElementById('roeMin').value ? parseFloat(document.getElementById('roeMin').value) : null
+                }
+            };
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(criteria)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    displayResults(result.data);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error searching: ' + error);
+            } finally {
+                hideLoading();
+            }
+        };
+    </script>
+</body>
+</html>

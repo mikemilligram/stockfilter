@@ -1,0 +1,20 @@
+# Environment files
+.env
+.env.example
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Python
+__pycache__/
+
+README.md

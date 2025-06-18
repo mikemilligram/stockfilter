@@ -1,0 +1,28 @@
+{
+    "mappings": {
+        "code": {
+            "mongodb_field": "General.Code"
+        },
+        "name": {
+            "mongodb_field": "General.Name"
+        },
+        "exchange": {
+            "mongodb_field": "General.Exchange"
+        },
+        "country": {
+            "mongodb_field": "General.CountryName"
+        },
+        "currency_symbol": {
+            "mongodb_field": "General.CurrencySymbol"
+        },
+        "revenue": {
+            "mongodb_field": "Highlights.RevenueTTM"
+        },
+        "return_on_equity": {
+            "mongodb_field": "Highlights.ReturnOnEquityTTM"
+        },
+        "financials": {
+            "mongodb_field": "Financials.Income_Statement.yearly"
+        }
+    }
+}
