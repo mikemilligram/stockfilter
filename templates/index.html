@@ -7,123 +7,139 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="container mx-auto px-4 pt-8 max-w-6xl">
         <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Stock Filter</h1>
-        
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-                <h2 class="text-lg font-semibold mb-3 text-gray-700">Search Criteria</h2>
-                <form id="searchForm" class="space-y-4">
-                    <!-- Revenue Range -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Revenue (Required)</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <input type="text" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="revenueMin" 
-                                    placeholder="Minimum Revenue"
-                                    value="500 000 000"
-                                    required>
-                            </div>
-                            <div>
-                                <input type="text" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="revenueMax" 
-                                    placeholder="Maximum (Optional)">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Revenue Growth -->
-                    <div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Revenue Growth %</label>
-                                <input type="number" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="revenueGrowthMin" 
-                                    placeholder="Minimum Growth"
-                                    value="20">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
-                                <input type="number" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="revenueGrowthYears" 
-                                    placeholder="Number of Years"
-                                    min="1"
-                                    step="1"
-                                    value="10">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Earnings Growth -->
-                    <div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Earnings Growth %</label>
-                                <input type="number" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="earningsGrowthMin" 
-                                    placeholder="Minimum Growth"
-                                    value="15">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
-                                <input type="number" 
-                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                    id="earningsGrowthYears" 
-                                    placeholder="Number of Years"
-                                    min="1"
-                                    step="1"
-                                    value="10">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Return on Equity -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Return on Equity</label>
-                        <div>                                
-                            <input type="number" 
-                                class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-                                id="roeMin" 
-                                placeholder="Minimum ROE %"
-                                value="35">
-                        </div>
-                    </div>
-
-                    <button type="submit" 
-                        id="searchButton"
-                        class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="inline-flex items-center">
-                            <span id="searchButtonText">Search</span>
-                            <svg id="loadingSpinner" class="hidden w-5 h-5 ml-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </span>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-700">Search Criteria</h2>
+                    <button id="collapseCriteriaBtn" type="button" class="text-sm font-semibold px-3 py-1 rounded-md border border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors" style="display:none;">
+                        <span id="collapseCriteriaBtnText">Collapse</span>
                     </button>
-                </form>
+                </div>
+                <div id="searchCriteriaPanel">
+                    <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <!-- Revenue Range -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Revenue (Required)</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <input type="text" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="revenueMin" 
+                                        placeholder="Minimum Revenue"
+                                        value="500 000 000"
+                                        required>
+                                </div>
+                                <div>
+                                    <input type="text" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="revenueMax" 
+                                        placeholder="Maximum (Optional)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Return on Equity -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Return on Equity %</label>
+                            <div>                                
+                                <input type="number" 
+                                    class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    id="roeMin" 
+                                    placeholder="Minimum ROE %"
+                                    value="35">
+                            </div>
+                        </div>
+
+                        <!-- Revenue Growth -->
+                        <div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Revenue Growth %</label>
+                                    <input type="number" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="revenueGrowthMin" 
+                                        placeholder="Minimum Growth %"
+                                        value="20">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
+                                    <input type="number" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="revenueGrowthYears" 
+                                        placeholder="Number of Years"
+                                        min="1"
+                                        step="1"
+                                        value="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings Growth -->
+                        <div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Earnings Growth %</label>
+                                    <input type="number" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="earningsGrowthMin" 
+                                        placeholder="Minimum Growth %"
+                                        value="15">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Period (Years)</label>
+                                    <input type="number" 
+                                        class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                        id="earningsGrowthYears" 
+                                        placeholder="Number of Years"
+                                        min="1"
+                                        step="1"
+                                        value="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <button type="submit" 
+                                id="searchButton"
+                                class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="inline-flex items-center">
+                                    <span id="searchButtonText">Search</span>
+                                    <svg id="loadingSpinner" class="hidden w-5 h-5 ml-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="results-container hidden">
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex items-baseline gap-3">
-                    <h3 class="text-xl font-semibold text-gray-700">Results</h3>
-                    <span id="resultCount" class="text-sm text-gray-500"></span>
+    <!-- Result Count Section -->
+    <div class="w-full px-4">
+        <div class="flex items-center justify-between px-4 py-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="text-xs text-gray-500" id="multiSortTip" style="display:none;">Tip: Hold <kbd class='px-1 py-0.5 bg-gray-200 rounded border text-xs'>Shift</kbd> and click multiple headers to sort by more than one column.</div>
+                    <button id="resetSortBtn" type="button" class="text-xs text-blue-600 underline hover:text-blue-800 focus:outline-none" style="display:none;">Reset sorting</button>
                 </div>
-                <button class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors" 
-                    id="exportBtn">
-                    Export to CSV
-                </button>
+                <div class="text-gray-700 text-sm font-medium" id="resultCount" style="display:none;"></div>
             </div>
-            <div class="overflow-x-auto bg-white rounded-lg shadow">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+            <button id="exportBtn" type="button" class="ml-4 bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" style="display:none;">
+                Export CSV
+            </button>
+        </div>
+    </div>
+    <!-- Results Table -->
+    <div class="w-full px-4 pb-4">
+        <div class="bg-white rounded-lg shadow">
+            <div class="overflow-x-auto" style="max-height: calc(100vh - 320px); overflow-y: auto;">
+                <table class="w-full min-w-max divide-y divide-gray-200" >
+                    <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr id="tableHeader">
                             <!-- Headers will be dynamically populated -->
                         </tr>
@@ -151,7 +167,7 @@
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const revenueMin = document.getElementById('revenueMin').value;
+            const revenueMin = parseFormattedNumber(document.getElementById('revenueMin').value);
             if (!revenueMin) {
                 alert('Minimum revenue is required');
                 return;
@@ -161,8 +177,8 @@
 
             const criteria = {
                 revenue: {
-                    min: parseFloat(revenueMin),
-                    max: document.getElementById('revenueMax').value ? parseFloat(document.getElementById('revenueMax').value) : null
+                    min: revenueMin,
+                    max: document.getElementById('revenueMax').value ? parseFormattedNumber(document.getElementById('revenueMax').value) : null
                 },
                 revenueGrowth: {
                     min: document.getElementById('revenueGrowthMin').value ? parseFloat(document.getElementById('revenueGrowthMin').value) : null,
@@ -209,36 +225,118 @@
                     return `${symbol} ${formattedNumber}`;
                 case 'return_on_equity':
                     return (value * 100).toFixed(2) + '%';
-                case 'currency_symbol':
-                    return null; // Don't show the currency symbol in its own column
                 default:
                     return value;
             }
         }
 
+        // Sorting state
+        let sortState = [];
+        let lastSortedData = [];
+        let lastHeaders = [];
+        window.currentFieldOrder = null; // Store canonical header order
+
+        function getSortIcon(field) {
+            const sort = sortState.find((s) => s.field === field);
+            if (!sort) return '';
+            const order = sortState.findIndex((s) => s.field === field) + 1;
+            return `${sort.dir === 'asc' ? '▲' : '▼'}<span class="ml-0.5 text-[10px] text-gray-400">${order > 1 ? order : ''}</span>`;
+        }
+
+        function sortData(data, headers) {
+            if (!sortState.length) return data;
+            // Copy data to avoid mutating original
+            return [...data].sort((a, b) => {
+                for (const { field, dir } of sortState) {
+                    let av = a[field], bv = b[field];
+                    // Try to parse as number if possible
+                    av = av !== null && av !== undefined && !isNaN(av) ? +av : av;
+                    bv = bv !== null && bv !== undefined && !isNaN(bv) ? +bv : bv;
+                    if (av < bv) return dir === 'asc' ? -1 : 1;
+                    if (av > bv) return dir === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
         function displayResults(data, response) {
+            const tipElem = document.getElementById('multiSortTip');
+            const resetSortBtn = document.getElementById('resetSortBtn');
             if (!data || data.length === 0) {
+                document.getElementById('resultCount').style.display = 'none';
+                if (tipElem) tipElem.style.display = 'none';
+                if (resetSortBtn) resetSortBtn.style.display = 'none';
                 alert('No results found');
                 return;
             }
+            // Show and update result count
+            const countElem = document.getElementById('resultCount');
+            countElem.style.display = 'block';
+            if (tipElem) tipElem.style.display = 'block';
+            if (resetSortBtn) resetSortBtn.style.display = sortState.length ? 'inline' : 'none';
+            countElem.textContent = `${data.length} ${data.length === 1 ? 'symbol' : 'symbols'} found`;
 
-            // Show results container and update count
-            document.querySelector('.results-container').style.display = 'block';
-            document.getElementById('resultCount').textContent = 
-                `${data.length} ${data.length === 1 ? 'symbol' : 'symbols'} found`;
+            // Store canonical header order from backend if present
+            if (response?.fieldOrder) {
+                window.currentFieldOrder = response.fieldOrder;
+            }
+            // Always use canonical header order if available
+            const headers = window.currentFieldOrder || (response?.fieldOrder) || Object.keys(data[0]);
+            renderTable(data, headers);
 
-            // Get the ordered headers from the response or fall back to Object.keys
-            const headers = response?.fieldOrder || Object.keys(data[0]);
+            // Store data for export
+            window.currentResults = data;
+
+            // Show export button
+            document.getElementById('exportBtn').style.display = 'inline-flex';
+        }
+
+        function renderTable(data, headers) {
+            // Always use canonical header order if available
+            if (window.currentFieldOrder) headers = window.currentFieldOrder;
             const headerRow = document.getElementById('tableHeader');
             headerRow.innerHTML = headers.map(h => `
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ${h.replace(/_/g, ' ')}
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none group" data-field="${h}">
+                    <span class="inline-flex items-center">${h.replace(/_/g, ' ')} <span class="ml-1 text-xs">${getSortIcon(h)}</span></span>
                 </th>
             `).join('');
 
+            // Add click handlers for sorting
+            Array.from(headerRow.children).forEach((th, idx) => {
+                const field = headers[idx];
+                th.onclick = (e) => {
+                    // Multi-sort with shift key
+                    if (e.shiftKey) {
+                        const existing = sortState.find(s => s.field === field);
+                        if (existing) {
+                            existing.dir = existing.dir === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            sortState.push({ field, dir: 'asc' });
+                        }
+                    } else {
+                        const existing = sortState.find(s => s.field === field);
+                        if (existing) {
+                            existing.dir = existing.dir === 'asc' ? 'desc' : 'asc';
+                            sortState = [existing, ...sortState.filter(s => s.field !== field)];
+                        } else {
+                            sortState = [{ field, dir: 'asc' }];
+                        }
+                    }
+                    // Show reset sort button if sorting is active
+                    const resetSortBtn = document.getElementById('resetSortBtn');
+                    if (resetSortBtn) resetSortBtn.style.display = sortState.length ? 'inline' : 'none';
+                    renderTable(lastSortedData, lastHeaders);
+                };
+            });
+
+            // Sort data
+            const sorted = sortData(data, headers);
+            lastSortedData = sorted;
+            lastHeaders = headers;
+
             // Populate table body
             const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = data.map(row => {
+            tableBody.innerHTML = sorted.map(row => {
                 return `<tr class="hover:bg-gray-50">
                     ${headers.map(h => {
                         const formattedValue = formatCellValue(h, row[h], row);
@@ -250,9 +348,6 @@
                     }).join('')}
                 </tr>`;
             }).join('');
-
-            // Store data for export
-            window.currentResults = data;
         }
 
         document.getElementById('exportBtn').addEventListener('click', async () => {
@@ -261,13 +356,24 @@
                 return;
             }
 
+            // Use the last headers (from the last renderTable call) as fieldOrder
+            let exportHeaders = (typeof lastHeaders !== 'undefined' && lastHeaders.length) ? lastHeaders : Object.keys(window.currentResults[0]);
+            let exportData = window.currentResults;
+
+            // Reorder each row to match header order
+            const reorderedData = exportData.map(row => {
+                const reordered = {};
+                exportHeaders.forEach(h => { reordered[h] = row[h]; });
+                return reordered;
+            });
+
             try {
                 const response = await fetch('/export', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ data: window.currentResults })
+                    body: JSON.stringify({ data: reorderedData, fieldOrder: exportHeaders })
                 });
 
                 const result = await response.json();
@@ -278,7 +384,7 @@
                     const a = document.createElement('a');
                     a.setAttribute('hidden', '');
                     a.setAttribute('href', url);
-                    a.setAttribute('download', 'export.csv');
+                    a.setAttribute('download', 'stocks.csv');
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -378,6 +484,50 @@
                 hideLoading();
             }
         };
+
+        // Collapse/expand search criteria panel
+        const searchCriteriaPanel = document.getElementById('searchCriteriaPanel');
+        const collapseBtn = document.getElementById('collapseCriteriaBtn');
+        const collapseBtnText = document.getElementById('collapseCriteriaBtnText');
+        let isCollapsed = false;
+
+        function setCriteriaPanelCollapsed(collapsed) {
+            isCollapsed = collapsed;
+            const panel = document.getElementById('searchCriteriaPanel');
+            if (collapsed) {
+                panel.classList.add('hidden');
+                collapseBtnText.textContent = 'Expand';
+            } else {
+                panel.classList.remove('hidden');
+                collapseBtnText.textContent = 'Collapse';
+            }
+        }
+
+        collapseBtn.addEventListener('click', () => {
+            setCriteriaPanelCollapsed(!isCollapsed);
+        });
+
+        // Show collapse button only when results are present
+        function showCollapseBtn(show) {
+            collapseBtn.style.display = show ? 'inline' : 'none';
+        }
+
+        // Patch displayResults to auto-collapse on first render
+        const originalDisplayResults = displayResults;
+        displayResults = function(data, response) {
+            originalDisplayResults(data, response);
+            if (data && data.length) {
+                setCriteriaPanelCollapsed(true);
+                showCollapseBtn(true);
+            } else {
+                setCriteriaPanelCollapsed(false);
+                showCollapseBtn(false);
+            }
+        };
+
+        // On page load, ensure panel is expanded and button hidden
+        setCriteriaPanelCollapsed(false);
+        showCollapseBtn(false);
     </script>
 </body>
 </html>

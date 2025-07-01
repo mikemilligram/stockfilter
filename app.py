@@ -104,19 +104,27 @@ def filter_results(results, criteria):
         include_result = True
         financials = get_nested_value(result, FIELD_MAPPINGS['financials']['mongodb_field'])
 
-        # Check revenue growth if criteria provided
-        if min_revenue_growth is not None and revenue_growth_years is not None:
-            growth_rate = calculate_growth(financials, 'totalRevenue', revenue_growth_years)
-            if growth_rate is None or growth_rate < min_revenue_growth:
-                include_result = False
-                continue
+        # Calculate and attach revenue growth if criteria provided
+        if revenue_growth_years is not None:
+            revenue_growth_value = calculate_growth(financials, 'totalRevenue', revenue_growth_years)
+            result['revenue_growth'] = revenue_growth_value
+            if min_revenue_growth is not None:
+                if revenue_growth_value is None or revenue_growth_value < min_revenue_growth:
+                    include_result = False
+                    continue
+        else:
+            result['revenue_growth'] = None
 
-        # Check earnings growth if criteria provided
-        if min_earnings_growth is not None and earnings_growth_years is not None:
-            growth_rate = calculate_growth(financials, 'ebit', earnings_growth_years)
-            if growth_rate is None or growth_rate < min_earnings_growth:
-                include_result = False
-                continue
+        # Calculate and attach earnings growth if criteria provided
+        if earnings_growth_years is not None:
+            earnings_growth_value = calculate_growth(financials, 'ebit', earnings_growth_years)
+            result['earnings_growth'] = earnings_growth_value
+            if min_earnings_growth is not None:
+                if earnings_growth_value is None or earnings_growth_value < min_earnings_growth:
+                    include_result = False
+                    continue
+        else:
+            result['earnings_growth'] = None
 
         if include_result:
             filtered_results.append(result)
@@ -127,14 +135,18 @@ def transform_result(result):
     """Transform MongoDB result to application format using field mappings."""
     transformed = {}
     
-    # Process fields in specified order
-    ordered_fields = ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity']
+    fields = ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'currency_symbol']
     
-    # First process ordered fields
-    for field in ordered_fields:
+    for field in fields:
         if field in FIELD_MAPPINGS:
             value = get_nested_value(result, FIELD_MAPPINGS[field]['mongodb_field'])
             transformed[field] = value
+
+    # Add revenue_growth and earnings_growth as percentages rounded to 1 decimal
+    def pct(val):
+        return f"{round(val * 100, 1)}%" if val is not None else None
+    transformed['revenue_growth'] = pct(result.get('revenue_growth'))
+    transformed['earnings_growth'] = pct(result.get('earnings_growth'))
     
     return transformed
 
@@ -246,7 +258,7 @@ def search():
             return jsonify({
                 "success": True, 
                 "data": transformed_results,
-                "fieldOrder": ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity']
+                "fieldOrder": ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'revenue_growth', 'earnings_growth']
             })
         except Exception as e:
             return jsonify({
@@ -260,12 +272,19 @@ def search():
 def export():
     try:
         results = request.json.get('data', [])
+        field_order = request.json.get('fieldOrder')
         if not results:
             return jsonify({"success": False, "error": "No data to export"}), 400
 
+        # Use fieldOrder if provided, else use keys from first result
+        if field_order:
+            fieldnames = field_order
+        else:
+            fieldnames = list(results[0].keys())
+
         # Create CSV in memory
         si = StringIO()
-        writer = csv.DictWriter(si, fieldnames=results[0].keys())
+        writer = csv.DictWriter(si, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(results)
 
