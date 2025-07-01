@@ -22,7 +22,7 @@ COPY . .
 
 # Build Tailwind CSS after all files are in place
 RUN mkdir -p static/dist \
-    && tailwindcss -c tailwind.config.js -i ./static/src/input.css -o ./static/dist/tailwind.css --minify
+    && tailwindcss -i ./static/src/input.css -o ./static/dist/tailwind.css --minify
 
 # Expose port
 EXPOSE 5000
