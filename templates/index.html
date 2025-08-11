@@ -225,13 +225,18 @@
         function formatCellValue(field, value, row) {
             if (value === null || value === undefined) return '-';
             
+            const symbol = (row?.currency_symbol || '$').trim();
+
             switch (field) {
                 case 'revenue':
-                    const symbol = (row?.currency_symbol || '$').trim();
                     const formattedNumber = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                    return `${symbol} ${formattedNumber}`;
+                    return `${symbol}${formattedNumber}`;
                 case 'return_on_equity':
                     return (value * 100).toFixed(2) + '%';
+                case 'oldest_share_price':
+                case 'recent_share_price':
+                    const roundDecimals = parseFloat(value).toFixed(2);
+                    return `${symbol}${roundDecimals}`;
                 default:
                     return value;
             }
@@ -301,7 +306,7 @@
             const headerRow = document.getElementById('tableHeader');
             headerRow.innerHTML = headers.map(h => `
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none group" data-field="${h}">
-                    <span class="inline-flex items-center">${h.replace(/_/g, ' ')} <span class="ml-1 text-xs">${getSortIcon(h)}</span></span>
+                    <span class="inline-flex items-center">${t('header_' + h)} <span class="ml-1 text-xs">${getSortIcon(h)}</span></span>
                 </th>
             `).join('');
 
@@ -437,57 +442,6 @@
             setupRevenueInput(document.getElementById('revenueMin'));
             setupRevenueInput(document.getElementById('revenueMax'));
         });
-
-        // Update form submission to handle formatted numbers
-        const originalSubmit = document.getElementById('searchForm').onsubmit;
-        document.getElementById('searchForm').onsubmit = async (e) => {
-            e.preventDefault();
-            
-            const revenueMin = parseFormattedNumber(document.getElementById('revenueMin').value);
-            if (!revenueMin) {
-                alert(t('min_revenue_required'));
-                return;
-            }
-
-            const criteria = {
-                revenue: {
-                    min: revenueMin,
-                    max: parseFormattedNumber(document.getElementById('revenueMax').value)
-                },
-                revenueGrowth: {
-                    min: document.getElementById('revenueGrowthMin').value ? parseFloat(document.getElementById('revenueGrowthMin').value) : null,
-                    years: document.getElementById('revenueGrowthYears').value ? parseInt(document.getElementById('revenueGrowthYears').value) : null
-                },
-                earningsGrowth: {
-                    min: document.getElementById('earningsGrowthMin').value ? parseFloat(document.getElementById('earningsGrowthMin').value) : null,
-                    years: document.getElementById('earningsGrowthYears').value ? parseInt(document.getElementById('earningsGrowthYears').value) : null
-                },
-                roe: {
-                    min: document.getElementById('roeMin').value ? parseFloat(document.getElementById('roeMin').value) : null
-                }
-            };
-
-            try {
-                const response = await fetch('/search', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(criteria)
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    displayResults(result.data);
-                } else {
-                    alert(t('error') + ': ' + result.error);
-                }
-            } catch (error) {
-                alert(t('error_searching') + ' ' + error);
-            } finally {
-                hideLoading();
-            }
-        };
 
         // Collapse/expand search criteria panel
         const searchCriteriaPanel = document.getElementById('searchCriteriaPanel');

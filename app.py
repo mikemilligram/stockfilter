@@ -82,6 +82,20 @@ def build_initial_query(criteria):
     
     return query
 
+def merge_fundamentals_and_historicals(fundamentals: list) -> list:
+    for fund in fundamentals:
+        symbol = f"{fund['General']['Code']}.{fund['General']['Code']}"
+        symbol2 = fund['General']['PrimaryTicker']
+        historicals = mongo.db.historicals.find_one({'Symbol': symbol})
+        if historicals:
+            fund['EOD'] = historicals.get('EOD')
+            continue
+        historicals = mongo.db.historicals.find_one({'Symbol': symbol2})
+        if historicals:
+            fund['EOD'] = historicals.get('EOD')
+    
+    return fundamentals
+
 def filter_results(results, criteria):
     """Apply additional filtering criteria to the results."""
     filtered_results = []
@@ -131,7 +145,7 @@ def filter_results(results, criteria):
 
     return filtered_results
 
-def transform_result(result):
+def transform_result(result, criteria):
     """Transform MongoDB result to application format using field mappings."""
     transformed = {}
     
@@ -147,6 +161,72 @@ def transform_result(result):
         return f"{round(val * 100, 1)}%" if val is not None else None
     transformed['revenue_growth'] = pct(result.get('revenue_growth'))
     transformed['earnings_growth'] = pct(result.get('earnings_growth'))
+    
+    # Add share price information
+    years = criteria.get('revenueGrowth', {}).get('years') #TODO either use same value for entire form or add dedicated form field for share prices
+    eod = result.get('EOD')
+    
+    # Get most recent share price (max $years)
+    if eod and isinstance(eod, dict):
+        # Find the most recent date
+        most_recent_date = max(eod.keys())
+        most_recent_price = eod[most_recent_date].get('close') if isinstance(eod[most_recent_date], dict) else None
+        transformed['recent_share_price'] = most_recent_price
+        transformed['recent_share_price_date'] = most_recent_date
+    else:
+        transformed['recent_share_price'] = None
+        transformed['recent_share_price_date'] = None
+
+    # Get oldest share price (max $years ago)
+    if eod and isinstance(eod, dict):
+        dates = sorted(eod.keys())  # Sort dates in ascending order
+        oldest_price = None
+        oldest_date = None
+        
+        if dates:
+            most_recent_year = int(dates[-1][:4])
+            target_year = most_recent_year - years if years else most_recent_year
+            
+            for date in dates:
+                year = int(date[:4])
+                if year >= target_year:
+                    oldest_price = eod[date].get('close') if isinstance(eod[date], dict) else None
+                    oldest_date = date
+                    break
+                    
+        transformed['oldest_share_price'] = oldest_price
+        transformed['oldest_share_price_date'] = oldest_date
+    else:
+        transformed['oldest_share_price'] = None
+        transformed['oldest_share_price_date'] = None
+        
+    # Calculate share price increase
+    if transformed['recent_share_price'] and transformed['oldest_share_price']:
+        try:
+            years_between = int(transformed['recent_share_price_date'][:4]) - int(transformed['oldest_share_price_date'][:4])
+            if years_between > 0:
+                total_growth = ((transformed['recent_share_price'] - transformed['oldest_share_price']) / transformed['oldest_share_price']) * 100
+                transformed['share_price_growth'] = f"{round(total_growth, 1)}%"
+            else:
+                transformed['share_price_growth'] = None
+        except:
+            transformed['share_price_growth'] = None
+    else:
+        transformed['share_price_growth'] = None
+        
+    # Calculate share price growth per annum if share price data is available
+    if transformed['recent_share_price'] and transformed['oldest_share_price']:
+        try:
+            years_between = float(transformed['recent_share_price_date'][:4]) - float(transformed['oldest_share_price_date'][:4])
+            if years_between > 0:
+                growth_per_annum = get_growth_rate(transformed['oldest_share_price'], transformed['recent_share_price'], years_between) * 100
+                transformed['share_price_growth_pa'] = f"{round(growth_per_annum, 1)}%"
+            else:
+                transformed['share_price_growth_pa'] = None
+        except:
+            transformed['share_price_growth_pa'] = None
+    else:
+        transformed['share_price_growth_pa'] = None
     
     return transformed
 
@@ -246,19 +326,27 @@ def search():
                     "error": "The fundamentals collection does not exist in the database"
                 }), 500
                 
+            print(f"Fetching fundamentals from db...")
             # Execute query on fundamentals collection
             fundamentals = list(mongo.db.fundamentals.find(initial_query))
             
             # Apply additional filtering criteria
+            print(f"Filtering based on criteria...")
             filtered_results = filter_results(fundamentals, criteria)
             
+            print(f"Merge with historical EOD data...")
+            merged_fundamentals = merge_fundamentals_and_historicals(filtered_results)
+            
             # Transform results using field mappings
-            transformed_results = [transform_result(result) for result in filtered_results]
+            print(f"Transform for output...")
+            transformed_results = [transform_result(result, criteria) for result in merged_fundamentals]
+            
+            print(f"Complete.")
                 
             return jsonify({
                 "success": True, 
                 "data": transformed_results,
-                "fieldOrder": ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'revenue_growth', 'earnings_growth']
+                "fieldOrder": ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'revenue_growth', 'earnings_growth', 'oldest_share_price_date', 'recent_share_price_date', 'oldest_share_price', 'recent_share_price', 'share_price_growth', 'share_price_growth_pa']
             })
         except Exception as e:
             return jsonify({

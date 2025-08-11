@@ -2,6 +2,23 @@
 
 const translations = {
     en: {
+        // Table Headers
+        header_name: 'Company Name',
+        header_code: 'Code',
+        header_exchange: 'Exchange',
+        header_country: 'Country',
+        header_revenue: 'Revenue',
+        header_return_on_equity: 'Return on Equity',
+        header_revenue_growth: 'Revenue Growth',
+        header_earnings_growth: 'Earnings Growth',
+        header_oldest_share_price_date: 'Start Date',
+        header_recent_share_price_date: 'End Date',
+        header_oldest_share_price: 'Start Price',
+        header_recent_share_price: 'End Price',
+        header_share_price_growth: 'Total Growth',
+        header_share_price_growth_pa: 'Annual Growth',
+        header_currency_symbol: 'Currency',
+        // Form and UI elements
         title: 'Stock Filter',
         search_criteria: 'Search Criteria',
         collapse: 'Collapse',
@@ -33,6 +50,23 @@ const translations = {
         language: 'Language:',
     },
     de: {
+        // Table Headers
+        header_name: 'Firmenname',
+        header_code: 'Code',
+        header_exchange: 'Börse',
+        header_country: 'Land',
+        header_revenue: 'Umsatz',
+        header_return_on_equity: 'Eigenkapitalrendite',
+        header_revenue_growth: 'Umsatzwachstum',
+        header_earnings_growth: 'Gewinnwachstum',
+        header_oldest_share_price_date: 'Startdatum',
+        header_recent_share_price_date: 'Enddatum',
+        header_oldest_share_price: 'Anfangskurs',
+        header_recent_share_price: 'Endkurs',
+        header_share_price_growth: 'Gesamtwachstum',
+        header_share_price_growth_pa: 'Jährliches Wachstum',
+        header_currency_symbol: 'Währung',
+        // Form and UI elements
         title: 'Aktienfilter',
         search_criteria: 'Suchkriterien',
         collapse: 'Einklappen',
