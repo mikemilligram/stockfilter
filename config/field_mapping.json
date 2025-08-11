@@ -1,5 +1,8 @@
 {
     "mappings": {
+        "isin": {
+            "mongodb_field": "General.ISIN"
+        },
         "code": {
             "mongodb_field": "General.Code"
         },

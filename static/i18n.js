@@ -4,6 +4,7 @@ const translations = {
     en: {
         // Table Headers
         header_name: 'Company Name',
+        header_isin: 'ISIN',
         header_code: 'Code',
         header_exchange: 'Exchange',
         header_country: 'Country',
@@ -53,6 +54,7 @@ const translations = {
         // Table Headers
         header_name: 'Firmenname',
         header_code: 'Code',
+        header_isin: 'ISIN',
         header_exchange: 'Börse',
         header_country: 'Land',
         header_revenue: 'Umsatz',

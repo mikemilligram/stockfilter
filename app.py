@@ -149,7 +149,7 @@ def transform_result(result, criteria):
     """Transform MongoDB result to application format using field mappings."""
     transformed = {}
     
-    fields = ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'currency_symbol']
+    fields = ['name', 'isin', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'currency_symbol']
     
     for field in fields:
         if field in FIELD_MAPPINGS:
@@ -346,7 +346,7 @@ def search():
             return jsonify({
                 "success": True, 
                 "data": transformed_results,
-                "fieldOrder": ['name', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'revenue_growth', 'earnings_growth', 'oldest_share_price_date', 'recent_share_price_date', 'oldest_share_price', 'recent_share_price', 'share_price_growth', 'share_price_growth_pa']
+                "fieldOrder": ['name', 'isin', 'code', 'exchange', 'country', 'revenue', 'return_on_equity', 'revenue_growth', 'earnings_growth', 'oldest_share_price_date', 'recent_share_price_date', 'oldest_share_price', 'recent_share_price', 'share_price_growth', 'share_price_growth_pa']
             })
         except Exception as e:
             return jsonify({
