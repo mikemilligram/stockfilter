@@ -118,7 +118,7 @@ def filter_results(results, criteria):
         include_result = True
         financials = get_nested_value(result, FIELD_MAPPINGS['financials']['mongodb_field'])
 
-        # Calculate and attach revenue growth if criteria provided
+        # Calculate and attach revenue growth per anno if criteria provided
         if revenue_growth_years is not None:
             revenue_growth_value = calculate_growth(financials, 'totalRevenue', revenue_growth_years)
             result['revenue_growth'] = revenue_growth_value
@@ -129,7 +129,7 @@ def filter_results(results, criteria):
         else:
             result['revenue_growth'] = None
 
-        # Calculate and attach earnings growth if criteria provided
+        # Calculate and attach earnings growth per anno if criteria provided
         if earnings_growth_years is not None:
             earnings_growth_value = calculate_growth(financials, 'ebit', earnings_growth_years)
             result['earnings_growth'] = earnings_growth_value
